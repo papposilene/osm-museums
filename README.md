@@ -9,6 +9,7 @@ If you wish to repeat this process, or run similar queries or convert OSM XML to
 ## Download
 
 Open Street Maps planet data is ~54GB compressed, and ~751GB once uncompressed. [Full planet files](https://wiki.openstreetmap.org/wiki/Planet.osm) are made available weekly.
+If you are looking for a specific country, you can find .osm.bz2 files on [Geofabrik](http://download.geofabrik.de/).
 
 ```bash
 # clone this repo
@@ -47,10 +48,10 @@ The above command is also the contents of `query.sh`. So you can instead run `./
 `osm2csv.py` is a python program to convert osm file (that are the result of `query.sh`) to csv. Before running this program you must install the necessary dependencies.
 
 ```
-pip install numpy scipy reverse_geocode unicodecsv
+pip3 install numpy scipy reverse_geocode unicodecsv
 ``` 
 
 To convert and augment geo location data, run:
 ```
-python osm2csv.py --input data/all-museums.osm --output data/all-museums.csv
+python3 osm2csv.py --input data/all-museums.osm --output data/all-museums.csv
 ```
