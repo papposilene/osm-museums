@@ -33,6 +33,10 @@ Osmosis can operate on `.bz2` compressed OSM files, however this is not encourag
 The official OSM query tool is a Java application called [Osmosis](https://wiki.openstreetmap.org/wiki/Osmosis). You must [download and install](https://wiki.openstreetmap.org/wiki/Osmosis#How_to_install) it for your platform. Next we search for all museums in the world and output the results to an XML file called `all-museums.osm` inside `data/`.
 
 ```bash
+brew install osmosis
+```
+
+```bash
 osmosis \
  --read-xml data/planet-170102.osm \
  --tf accept-nodes tourism=museum \
