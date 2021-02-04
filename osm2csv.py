@@ -28,6 +28,7 @@ def create_entry():
         "postal_code": None,
         "city": None,
         "country": None,
+        "country_code": None,
         "lat": None,
         "lon": None,
         "website": None,
@@ -46,7 +47,7 @@ def main():
     with open(args.output, 'wb') as csv_file:
 
         fieldnames = ['osm_id', 'name', 'name:en', 'int_name', 'old_name', 'old_name:en', 'number', 'street', 'postal_code',
-                      'city', 'country', 'lat', 'lon', 'website', 'phone', 'fax', 'tags', 'description', 'date_added']
+                      'city', 'country', 'country_code', 'lat', 'lon', 'website', 'phone', 'fax', 'tags', 'description', 'date_added']
         csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         csv_writer.writeheader()
 
@@ -85,6 +86,7 @@ def main():
                         entry['city'] = ""
 
                     entry['country'] = location.raw['address']['country']
+                    entry['country_code'] = location.raw['address']['country_code']
             elif event == 'end':
                 if elem.tag == 'tag':
                     if 'k' in elem.attrib and elem.attrib['k'] == 'name': entry['name'] = elem.attrib['v']
