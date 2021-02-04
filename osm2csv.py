@@ -41,7 +41,7 @@ def create_entry():
 def main():
 
     args = parse_args()
-    locator = Nominatim(user_agent="myGeocoder", timeout=10)
+    locator = Nominatim(user_agent="osm-museums", timeout=10)
 
     with open(args.output, 'wb') as csv_file:
 
