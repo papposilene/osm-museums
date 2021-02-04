@@ -6,6 +6,7 @@ import json
 import geopy
 from geopy.geocoders import Nominatim
 from geopy.extra.rate_limiter import RateLimiter
+##import reverse_geocode
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Convert museum osm files to csv')
@@ -61,10 +62,9 @@ def main():
                     if 'timestamp' in elem.attrib: entry['date_added'] = elem.attrib['timestamp']
                     coords = [(float(elem.attrib['lat']), float(elem.attrib['lon']))]
                     location = locator.reverse(coords)
-                    
-                    # Can be commented to hide the print out
+
+
                     print(location.raw)
-                    
                     json_dump = json.dumps(str(location.raw))
                     dictionary = json.loads(json_dump)
 
@@ -77,6 +77,8 @@ def main():
                         entry['city'] = location.raw['address']['village']
                     elif 'town' in dictionary:
                         entry['city'] = location.raw['address']['town']
+                    elif 'municipality' in dictionary:
+                        entry['city'] = location.raw['address']['municipality']
                     elif 'city' in dictionary:
                         entry['city'] = location.raw['address']['city']
                     else:
