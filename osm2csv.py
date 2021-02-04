@@ -2,7 +2,10 @@
 import argparse
 import unicodecsv as csv
 import xml.etree.ElementTree as ET
-import reverse_geocode
+import json
+import geopy
+from geopy.geocoders import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Convert museum osm files to csv')
@@ -19,24 +22,30 @@ def create_entry():
         "int_name": None,
         "old_name": None,
         "old_name:en": None,
-        "country": None,
+        "number": None,
+        "street": None,
+        "postal_code": None,
         "city": None,
+        "country": None,
         "lat": None,
         "lon": None,
         "website": None,
         "phone": None,
-        "date_added": None,
-        "description": None
+        "fax": None,
+        "tags": None,
+        "description": None,
+        "date_added": None
     }
 
 def main():
 
     args = parse_args()
+    locator = Nominatim(user_agent="myGeocoder", timeout=10)
 
     with open(args.output, 'wb') as csv_file:
 
-        fieldnames = ['osm_id', 'name', 'name:en', 'int_name', 'old_name', 'old_name:en', 'country',
-                      'city', 'lat', 'lon', 'website', 'phone', 'date_added', 'description']
+        fieldnames = ['osm_id', 'name', 'name:en', 'int_name', 'old_name', 'old_name:en', 'number', 'street', 'postal_code',
+                      'city', 'country', 'lat', 'lon', 'website', 'phone', 'fax', 'tags', 'description', 'date_added']
         csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         csv_writer.writeheader()
 
@@ -51,9 +60,29 @@ def main():
                     if 'lon' in elem.attrib: entry['lon'] = elem.attrib['lon']
                     if 'timestamp' in elem.attrib: entry['date_added'] = elem.attrib['timestamp']
                     coords = [(float(elem.attrib['lat']), float(elem.attrib['lon']))]
-                    location = reverse_geocode.search(coords)[0]
-                    entry['country'] = location['country']
-                    entry['city'] = location['city']
+                    location = locator.reverse(coords)
+                    
+                    # Can be commented to hide the print out
+                    print(location.raw)
+                    
+                    json_dump = json.dumps(str(location.raw))
+                    dictionary = json.loads(json_dump)
+
+                    if 'postcode' in dictionary:
+                        entry['postal_code'] = location.raw['address']['postcode']
+                    else:
+                        entry['postal_code'] = ""
+
+                    if 'village' in dictionary:
+                        entry['city'] = location.raw['address']['village']
+                    elif 'town' in dictionary:
+                        entry['city'] = location.raw['address']['town']
+                    elif 'city' in dictionary:
+                        entry['city'] = location.raw['address']['city']
+                    else:
+                        entry['city'] = ""
+
+                    entry['country'] = location.raw['address']['country']
             elif event == 'end':
                 if elem.tag == 'tag':
                     if 'k' in elem.attrib and elem.attrib['k'] == 'name': entry['name'] = elem.attrib['v']
